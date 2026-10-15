@@ -25,6 +25,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.core.errors import AppError, UnavailableError, UpstreamError
+from app.core.timeutils import app_tz
 from app.models import Discussion
 from app.schemas.brief import BriefContent, ConversationBrief
 from app.schemas.lead import LeadDetail
@@ -77,6 +78,11 @@ class BriefProvider(Protocol):
 # --------------------------------------------------------------------------- prompt
 
 
+def _local_label(value: datetime) -> str:
+    local = value.astimezone(app_tz())
+    return f"{local:%d %b %Y, %H:%M} {local.tzname()}"
+
+
 def build_user_prompt(lead: LeadDetail, discussions: list[Discussion]) -> str:
     lines = [
         f"Lead: {lead.name}",
@@ -84,13 +90,13 @@ def build_user_prompt(lead: LeadDetail, discussions: list[Discussion]) -> str:
         f"Current status: {lead.status.value}",
     ]
     if lead.pending_follow_ups:
-        times = ", ".join(f.scheduled_at.isoformat() for f in lead.pending_follow_ups)
-        lines.append(f"Pending follow-ups scheduled for (UTC): {times}")
+        times = ", ".join(_local_label(f.scheduled_at) for f in lead.pending_follow_ups)
+        lines.append(f"Pending follow-ups scheduled for: {times}")
     else:
         lines.append("Pending follow-ups: none")
     lines.append("\n<notes>")
     for d in discussions:  # chronological
-        lines.append(f"[{d.created_at.date().isoformat()}] {d.note}")
+        lines.append(f"[{d.created_at.astimezone(app_tz()).date().isoformat()}] {d.note}")
     lines.append("</notes>")
     return "\n".join(lines)
 
@@ -228,7 +234,8 @@ class DemoProvider:
     model = None
 
     def generate(self, lead: LeadDetail, discussions: list[Discussion]) -> BriefContent:
-        notes = [(d.created_at, d.note) for d in discussions]  # chronological
+        tz = app_tz()
+        notes = [(d.created_at.astimezone(tz), d.note) for d in discussions]  # chronological
         first_at, last_at = notes[0][0], notes[-1][0]
         count = len(notes)
         span = (
@@ -254,9 +261,7 @@ class DemoProvider:
         open_items = _unique(open_items, 5)
 
         for follow_up in lead.pending_follow_ups:
-            open_items.append(
-                f"Follow-up scheduled for {follow_up.scheduled_at:%d %b %Y, %H:%M} UTC"
-            )
+            open_items.append(f"Follow-up scheduled for {_local_label(follow_up.scheduled_at)}")
 
         questions = [f"Is there any update on: “{_shorten(i, 100)}”?" for i in open_items[:3]]
         questions += [
