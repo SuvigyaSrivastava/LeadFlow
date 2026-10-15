@@ -17,7 +17,7 @@ A short walkthrough video is in [`screenshots/demo.webm`](screenshots/demo.webm)
 - Add lead: name required, company and phone optional, status defaults to New.
 
 **Bonus**
-- Search, overdue highlighting, status filters, seed script (7 leads, 15 discussions) and Docker Compose.
+- Search, overdue highlighting, status filters, seed script (7 leads, 13 discussions) and Docker Compose.
 - Reschedule, complete or cancel follow-ups, from the queue or the lead dialog.
 - **Prepare for next conversation**: an optional brief built only from the recorded notes (see [AI brief](#ai-conversation-brief)).
 - Accessible dialogs (focus trap, Escape, focus returns to the opener), toasts, loading, empty and error states, responsive layout, reduced-motion support.
