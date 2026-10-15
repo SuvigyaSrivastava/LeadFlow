@@ -88,7 +88,7 @@ function PanelBody({ leadId, timeZone, onRequestClose, onDirtyChange }: {
 
   return (
     <>
-      <header className="flex flex-wrap items-start gap-x-3 gap-y-3 border-b border-line px-5 pt-5 pb-4">
+      <header className="flex flex-wrap items-start gap-x-3 gap-y-3 sm:flex-nowrap border-b border-line px-5 pt-5 pb-4">
         <div className="min-w-0 flex-1 basis-3/5">
           <DialogTitle className="truncate text-lg font-semibold text-ink">{data.name}</DialogTitle>
           <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted">
@@ -131,7 +131,6 @@ function PanelBody({ leadId, timeZone, onRequestClose, onDirtyChange }: {
       <div ref={scroller} className="flex-1 space-y-5 overflow-y-auto px-5 py-4">
         <RelationshipSummary lead={data} timeZone={timeZone} now={now} />
         <PendingFollowUps leadName={data.name} followUps={data.pending_follow_ups} timeZone={timeZone} now={now} />
-        <ConversationBriefCard key={leadId} leadId={leadId} discussionCount={data.discussion_count} />
         <section aria-labelledby="timeline-heading">
           <h3 id="timeline-heading" className="mb-3 text-sm font-semibold text-ink">
             Discussion history
@@ -154,6 +153,7 @@ function PanelBody({ leadId, timeZone, onRequestClose, onDirtyChange }: {
             <Timeline discussions={discussions.data ?? []} timeZone={timeZone} now={now} />
           )}
         </section>
+        <ConversationBriefCard key={leadId} leadId={leadId} discussionCount={data.discussion_count} />
       </div>
 
       <DiscussionComposer

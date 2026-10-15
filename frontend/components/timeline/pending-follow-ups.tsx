@@ -44,7 +44,9 @@ export function PendingFollowUps({ leadName, followUps, timeZone, now }: Props) 
         {followUps.map((f) => (
           <li key={f.id} className="flex flex-wrap items-center gap-x-2 gap-y-1.5 bg-surface px-3 py-2">
             {f.state && <FollowUpChip iso={f.scheduled_at} state={f.state} timeZone={timeZone} now={now} />}
-            <span className="min-w-[7rem] flex-1 text-xs text-muted">{formatDateTime(f.scheduled_at, timeZone, now)}</span>
+            <span className="min-w-[7rem] flex-1 text-xs text-muted">
+              {f.state === "overdue" ? `Was due ${formatDateTime(f.scheduled_at, timeZone, now)}` : ""}
+            </span>
             <span className="ml-auto flex items-center gap-1">
             <Button
               variant="ghost"
