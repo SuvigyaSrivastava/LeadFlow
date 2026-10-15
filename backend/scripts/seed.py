@@ -5,7 +5,7 @@ the demo leads are deleted (discussions and follow-ups cascade) and re-created w
 timestamps relative to *now*, so "due today" and "overdue" are never stale and
 re-running never creates duplicates. Leads you created yourself are left untouched.
 
-Usage (from backend/):  python -m scripts.seed
+Usage (from backend/):  python -m scripts.seed [--if-empty]
 """
 
 import uuid
@@ -204,5 +204,22 @@ def seed() -> None:
     print(f"Seeded {len(specs)} demo leads (timezone {get_settings().app_timezone}).")
 
 
-if __name__ == "__main__":
+def seed_if_empty() -> None:
+    """Seed only when there are no leads yet (used for first deploys on hosted DBs)."""
+    from sqlalchemy import func, select
+
+    with SessionLocal() as db:
+        count = db.scalar(select(func.count()).select_from(Lead)) or 0
+    if count:
+        print(f"Skipping seed: {count} leads already exist.")
+        return
     seed()
+
+
+if __name__ == "__main__":
+    import sys
+
+    if "--if-empty" in sys.argv:
+        seed_if_empty()
+    else:
+        seed()

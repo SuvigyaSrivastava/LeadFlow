@@ -17,4 +17,5 @@ USER appuser
 EXPOSE 8000
 
 # Apply migrations, then serve. Migrations are idempotent, so restarts are safe.
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+# Set SEED_DEMO_DATA=true on a fresh hosted database to load demo leads (only runs when empty).
+CMD ["sh", "-c", "alembic upgrade head && if [ \"$SEED_DEMO_DATA\" = \"true\" ]; then python -m scripts.seed --if-empty; fi && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
