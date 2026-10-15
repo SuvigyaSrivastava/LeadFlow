@@ -6,6 +6,19 @@ A lightweight lead workspace for sales reps and financial advisors: track leads,
 
 A short walkthrough video is in [`screenshots/demo.webm`](screenshots/demo.webm).
 
+## Live demo
+
+- App: https://lead-flow-omega-azure.vercel.app (Next.js on Vercel)
+- API: https://leadflow-api-lxk6.onrender.com (FastAPI on Render, docs at `/docs`)
+
+The API runs on a free Render instance that sleeps when idle, so the first request after a pause can take about 50 seconds. Demo leads are loaded on first start when `SEED_DEMO_DATA=true`.
+
+### Deployment notes
+
+- **Backend (Render, Docker, root directory `backend`):** `DATABASE_URL` (Render Postgres internal URL, using the `postgresql+psycopg://` scheme), `APP_TIMEZONE`, `AI_PROVIDER=demo`, `CORS_ORIGINS` (the Vercel URL), optional `SEED_DEMO_DATA=true`. Migrations run on every start.
+- **Frontend (Vercel, root directory `frontend`):** `NEXT_PUBLIC_API_URL` set to the Render API URL.
+
+
 ## Features
 
 **Required**
@@ -143,4 +156,6 @@ The real-provider path is covered by tests with a mocked HTTP transport (request
 
 ## AI usage disclosure
 
-This project was built with AI assistance. The code, tests, docs and screenshots were produced by Claude (Anthropic) working in an agentic coding environment from a detailed specification, and then run and verified as described under [Tests](#tests). The submitting candidate should review the code and edit this section so it accurately reflects their own involvement.
+The application code, tests, documentation and screenshots in this repository were written by Claude (Anthropic) in an agentic coding session, working from the assessment brief and a detailed build specification supplied by the candidate. Claude ran the tests described under [Tests](#tests) and captured the screenshots and demo video from the running app. The candidate created the GitHub repository and deployed the app to Render and Vercel (with Claude driving the dashboards in the candidate's browser session).
+
+Not verified: Docker Compose was validated with `docker compose config` but not run, and the Anthropic and OpenAI-compatible brief providers are covered only by mocked tests, not live calls.
